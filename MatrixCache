@@ -1,0 +1,37 @@
+## From a plain matrix, create a cached environment that can store it's inverse.
+makeCacheMatrix <- function(x = matrix()) {
+        cached_matrix_inv <- NULL
+        set <- function(new_matrix) {
+                # Set matrix and throw out cached inverse.
+                x <<- new_matrix
+                cached_matrix_inv <<- NULL
+        }
+        get <- function() x
+        setInverse <- function (matrix_inverse) cached_matrix_inv <<- matrix_inverse
+        getInverse <- function () cached_matrix_inv
+        list(set = set, get = get, setInverse=setInverse, getInverse=getInverse)
+}
+
+
+## Wraps the 'solve' function so it behaves well with the cacheMatrix environment.
+cacheSolve <- function(x, ...) {
+        ## Return a matrix that is the inverse of 'x'
+        matrix_inverse <- x$getInverse()
+        
+        # If inverse is in cache, just return cached inverse.
+        if(!is.null(matrix_inverse)) {
+              return(matrix_inverse)
+        }
+        
+        # Cached inverse is null.
+        
+        # Caculate inverse...
+        matrix <- x$get()
+        matrix_inverse <- solve(matrix, ...)
+        
+        # Store in cache...
+        x$setInverse(matrix_inverse)
+        
+        # Return inverse
+        matrix_inverse
+}
